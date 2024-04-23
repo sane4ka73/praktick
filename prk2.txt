@@ -1,0 +1,350 @@
+Задание 1:
+
+**СТЕК**
+
+package main
+
+import "errors"
+
+type any interface{}
+
+type stack struct {
+	s    []any // слайс в котором хранятся значения в стеке
+	head int   // индекс головы стека
+}
+
+func newStack(size int) *stack {
+	return &stack{
+		s:    make([]any, size),
+		head: -1,
+	}
+}
+
+// push - добавление в стек значения
+func push(s *stack, v any) error {
+	if s.head == len(s.s)-1 {
+		return errors.New("стек переполнен")
+	}
+	s.head++
+	s.s[s.head] = v
+	return nil
+}
+
+// pop - получение значения из стека и его удаление из вершины
+func pop(s *stack) (any, error) {
+	if s.head == -1 {
+		return nil, errors.New("стек пуст")
+	}
+	item := s.s[s.head]
+	s.head--
+	return item, nil
+}
+
+// peek - просмотр значения на вершине стека
+func peek(s *stack) (any, error) {
+	if s.head == -1 {
+		return nil, errors.New("стек пуст")
+	}
+	return s.s[s.head], nil
+}
+
+func main() {
+	s := newStack(5)
+
+	push(s, 1)
+	push(s, 2)
+	push(s, 3)
+
+	val, err := peek(s)
+	if err == nil {
+		println("Верхний элемент стека:", val)
+	}
+
+	item, err := pop(s)
+	if err == nil {
+		println("Извлеченный элемент из стека:", item)
+	}
+}
+
+
+**ОЧЕРЕДЬ**
+
+package main
+
+import "errors"
+
+type any interface{}
+
+type queue struct {
+	s    []any // слайс в котором хранятся значения
+	low  int   // индекс нижней границы очереди
+	high int   // индекс верхней границы очереди
+	size int   // размер очереди
+}
+
+func newQueue(size int) *queue {
+	return &queue{
+		s:    make([]any, size),
+		size: size,
+		low:  -1,
+		high: -1,
+	}
+}
+
+// push - добавление в очередь значения
+func push(q *queue, v any) error {
+	if q.high == q.size-1 {
+		return errors.New("очередь переполнена")
+	}
+	if q.low == -1 {
+		q.low = 0
+	}
+	q.high++
+	q.s[q.high] = v
+	return nil
+}
+
+// pop - получение значения из очереди и его удаление
+func pop(q *queue) (any, error) {
+	if q.low == -1 || q.low > q.high {
+		return nil, errors.New("очередь пуста")
+	}
+	item := q.s[q.low]
+	q.low++
+	if q.low > q.high {
+		q.low = -1
+		q.high = -1
+	}
+	return item, nil
+}
+
+func main() {
+	q := newQueue(5)
+
+	push(q, 1)
+	push(q, 2)
+	push(q, 3)
+
+	val, err := pop(q)
+	if err == nil {
+		println("Извлеченный элемент из очереди:", val)
+	}
+
+	val, err = pop(q)
+	if err == nil {
+		println("Извлеченный элемент из очереди:", val)
+	}
+}
+
+
+**БИНАРНОЕ ДЕРЕВО**
+
+package main
+
+type tree struct {
+	head *node
+}
+
+type node struct {
+	left, right *node
+	v           int
+}
+
+func newTree() *tree {
+	return &tree{}
+}
+
+// add - добавление значения в дерево
+func add(t *tree, v int) {
+	if t.head == nil {
+		t.head = &node{v: v}
+	} else {
+		addNode(t.head, v)
+	}
+}
+
+// addNode - вспомогательная функция для добавления значения в узел дерева
+func addNode(n *node, v int) {
+	if v < n.v {
+		if n.left == nil {
+			n.left = &node{v: v}
+		} else {
+			addNode(n.left, v)
+		}
+	} else {
+		if n.right == nil {
+			n.right = &node{v: v}
+		} else {
+			addNode(n.right, v)
+		}
+	}
+}
+
+// remove - удаление значения из дерева
+func remove(t *tree, v int) {
+	t.head = removeNode(t.head, v)
+}
+
+// removeNode - вспомогательная функция для удаления значения из узла дерева
+func removeNode(n *node, v int) *node {
+	if n == nil {
+		return nil
+	}
+
+	if v < n.v {
+		n.left = removeNode(n.left, v)
+	} else if v > n.v {
+		n.right = removeNode(n.right, v)
+	} else {
+		if n.left == nil {
+			return n.right
+		} else if n.right == nil {
+			return n.left
+		}
+
+		minRight := findMin(n.right)
+		n.v = minRight.v
+		n.right = removeNode(n.right, minRight.v)
+	}
+
+	return n
+}
+
+// findMin - вспомогательная функция для поиска минимального значения в дереве
+func findMin(n *node) *node {
+	for n.left != nil {
+		n = n.left
+	}
+	return n
+}
+
+// values - получение отсортированного слайса значений из дерева
+func values(t *tree) []int {
+	var result []int
+	inOrderTraversal(t.head, &result)
+	return result
+}
+
+// inOrderTraversal - вспомогательная функция для обхода дерева в порядке in-order
+func inOrderTraversal(n *node, result *[]int) {
+	if n != nil {
+		inOrderTraversal(n.left, result)
+		*result = append(*result, n.v)
+		inOrderTraversal(n.right, result)
+	}
+}
+
+func main() {
+	t := newTree()
+
+	add(t, 5)
+	add(t, 3)
+	add(t, 7)
+	add(t, 2)
+	add(t, 4)
+
+	println("Значения в дереве:", values(t)) // Должно вывести: [2 3 4 5 7]
+
+	remove(t, 3)
+
+	println("Значения в дереве после удаления:", values(t)) // Должно вывести: [2 4 5 7]
+}
+
+
+
+
+Задание 2:
+
+
+package main
+
+import (
+	"fmt"
+)
+
+// Функция для конвертации римских цифр в арабские
+func romanToArabic(roman string) (int, error) {
+	romanMap := map[byte]int{'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
+	var result int
+
+	for i := 0; i < len(roman); i++ {
+		if i > 0 && romanMap[roman[i]] > romanMap[roman[i-1]] {
+			result += romanMap[roman[i]] - 2*romanMap[roman[i-1]]
+		} else {
+			result += romanMap[roman[i]]
+		}
+	}
+
+	return result, nil
+}
+
+func main() {
+	// Пример использования
+	romanNumeral := "XIX"
+	arabicNumeral, err := romanToArabic(romanNumeral)
+	if err != nil {
+		fmt.Println("Ошибка:", err)
+	} else {
+		fmt.Printf("%s в арабских цифрах: %d\n", romanNumeral, arabicNumeral)
+	}
+}
+
+
+
+Задание 3:
+
+
+
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+// Функция для генерации случайных уникальных чисел в диапазоне от 1 до n^2
+func generateUniqueNumbers(n int) []int {
+	numbers := make([]int, n*n)
+	for i := 0; i < n*n; i++ {
+		numbers[i] = i + 1
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(numbers), func(i, j int) {
+		numbers[i], numbers[j] = numbers[j], numbers[i]
+	})
+
+	return numbers
+}
+
+// Функция для заполнения двумерного массива случайными уникальными числами
+func fillArrayWithUniqueNumbers(rows, cols int) [][]int {
+	totalElements := rows * cols
+	uniqueNumbers := generateUniqueNumbers(totalElements)
+	array := make([][]int, rows)
+
+	for i := range array {
+		array[i] = make([]int, cols)
+	}
+
+	k := 0
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			array[i][j] = uniqueNumbers[k]
+			k++
+		}
+	}
+
+	return array
+}
+
+func main() {
+	rows, cols := 3, 3
+	array := fillArrayWithUniqueNumbers(rows, cols)
+
+	fmt.Println("Случайно заполненный двумерный массив:")
+	for _, row := range array {
+		fmt.Println(row)
+	}
+}

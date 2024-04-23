@@ -1,0 +1,103 @@
+ЗАДАНИЕ 1:
+
+
+package main
+
+import (
+	"reflect"
+	"testing"
+)
+
+func TestBubbleSort(t *testing.T) {
+	// Исходные данные
+	input := []int{5, 3, 7, 2, 4}
+	// Ожидаемый результат
+	expected := []int{2, 3, 4, 5, 7}
+
+	// Вызов функции сортировки
+	BubbleSort(input)
+
+	// Проверка результатов
+	if !reflect.DeepEqual(input, expected) {
+		t.Errorf("BubbleSort(%v) = %v, ожидалось %v", input, input, expected)
+	}
+}
+
+func TestMergeSort(t *testing.T) {
+	// Исходные данные
+	input := []int{5, 3, 7, 2, 4}
+	// Ожидаемый результат
+	expected := []int{2, 3, 4, 5, 7}
+
+	// Вызов функции сортировки
+	MergeSort(input)
+
+	// Проверка результатов
+	if !reflect.DeepEqual(input, expected) {
+		t.Errorf("MergeSort(%v) = %v, ожидалось %v", input, input, expected)
+	}
+}
+
+
+
+ЗАДАНИЕ 2:
+
+
+package main
+
+import (
+	"testing"
+)
+
+func TestStack_Push(t *testing.T) {
+	s := NewStack()
+	s.Push(1)
+	s.Push(2)
+
+	if s.Size() != 2 {
+		t.Errorf("Ожидалось, что размер стека будет 2, получено: %d", s.Size())
+	}
+}
+
+func TestStack_Pop(t *testing.T) {
+	s := NewStack()
+	s.Push(1)
+	s.Push(2)
+
+	val, err := s.Pop()
+	if err != nil {
+		t.Errorf("Ошибка при извлечении из стека: %v", err)
+	}
+	if val != 2 {
+		t.Errorf("Ожидалось, что извлекаемое значение будет 2, получено: %v", val)
+	}
+}
+
+func TestStack_Peek(t *testing.T) {
+	s := NewStack()
+	s.Push(1)
+	s.Push(2)
+
+	val, err := s.Peek()
+	if err != nil {
+		t.Errorf("Ошибка при просмотре верхнего элемента стека: %v", err)
+	}
+	if val != 2 {
+		t.Errorf("Ожидалось, что верхний элемент стека будет 2, получено: %v", val)
+	}
+}
+
+func TestStack_IsEmpty(t *testing.T) {
+	s := NewStack()
+
+	if !s.IsEmpty() {
+		t.Errorf("Ожидалось, что стек будет пустым, но он не пустой")
+	}
+
+	s.Push(1)
+	s.Push(2)
+
+	if s.IsEmpty() {
+		t.Errorf("Ожидалось, что стек будет непустым, но он пустой")
+	}
+}
